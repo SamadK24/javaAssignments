@@ -1,0 +1,45 @@
+package com.swabhav.BankingApp.test;
+
+import java.util.Scanner;
+
+import com.swabhav.BankingApp.ui.AdminUI;
+import com.swabhav.BankingApp.ui.CustomerUI;
+
+public class BankingAppTest {
+	public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            System.out.println("\n===== Welcome to Banking App =====");
+            System.out.println("1. Login as Admin");
+            System.out.println("2. Login as Customer");
+            System.out.println("3. Exit");
+            System.out.print("Enter choice: ");
+            
+            int choice = -1;
+            try {
+                choice = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input.");
+                continue;
+            }
+
+            switch (choice) {
+                case 1:
+                    if (AdminUI.loginAsAdmin()) {
+                        AdminUI.showAdminMenu();
+                    } else {
+                        System.out.println("Invalid admin credentials.");
+                    }
+                    break;
+                case 2:
+                	CustomerUI.loginAndShowCustomerMenu(); // Placeholder — coming next
+                    break;
+                case 3:
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        }
+    }
+}
