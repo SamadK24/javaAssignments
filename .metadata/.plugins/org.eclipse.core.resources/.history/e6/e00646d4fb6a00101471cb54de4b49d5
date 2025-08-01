@@ -1,0 +1,30 @@
+package com.swabhav.BankingApp.model;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class BankService {
+
+	public void addAccount(String name, double balance) {
+	    String insertQuery = "INSERT INTO accounts (name, balance) VALUES (?, ?)";
+
+	    try (Connection conn = DBUtil.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
+
+	        stmt.setString(1, name);
+	        stmt.setDouble(2, balance);
+
+	        int rowsAffected = stmt.executeUpdate();
+	        if (rowsAffected > 0) {
+	            System.out.println("Account created successfully!");
+	        } else {
+	            System.out.println("Failed to create account.");
+	        }
+
+	    } catch (SQLException e) {
+	        System.out.println("Database Error: " + e.getMessage());
+	    }
+	}
+
+}

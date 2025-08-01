@@ -1,0 +1,21 @@
+package com.swabhav.BankingApp.test;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import com.swabhav.BankingApp.util.DBUtil;
+
+public class DBTest {
+    public static void main(String[] args) {
+        try (Connection conn = DBUtil.getConnection()) {
+            if (conn != null) {
+                System.out.println("✅ Connection Successful!");
+            } else {
+                System.out.println("❌ Failed to establish connection.");
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ SQLException: " + e.getMessage());
+        }
+    }
+}
+

@@ -1,0 +1,63 @@
+package com.swabhav.jdbc;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class JdbcDemo {
+public static void main(String[] args) throws Exception {
+	
+	//register driver
+	Class.forName("com.mysql.cj.jdbc.Driver");
+	
+	//create connection
+	Connection connection=DriverManager.getConnection("jdbc:mysql://localhost:3306/jdbc_demo","root","samadKasu12@#");
+	System.out.println("Connection Established Successfully");
+	
+	//inserting data 
+	
+//	String insertQuery="insert into employee(id,name,salary) values (?,?,?)";
+//	PreparedStatement ps=connection.prepareStatement(insertQuery);
+	
+//	ps.setInt(1,101);
+//	ps.setString(2,"samad");
+//	ps.setDouble(3, 45000);
+	
+	
+//	int numberOfRowsAffected=ps.executeUpdate();
+	
+//	ps.setInt(1,102);
+//	ps.setString(2,"sam");
+//	ps.setDouble(3, 4500);
+//	numberOfRowsAffected+=ps.executeUpdate();
+//	System.out.println(numberOfRowsAffected+"Inserted data successfully");
+	
+			
+	
+	//read from table
+	
+//	String selectQuery="select * from employee";
+//	
+//	Statement st=connection.createStatement();
+//	ResultSet rs=st.executeQuery(selectQuery);
+//	
+//	while(rs.next()) {
+//		System.out.println(rs.getInt("id")+" - "+rs.getString("name")+" - "+rs.getDouble("salary"));
+//	}
+	
+	//update
+	String updateSalary= "update employee set salary=? where name=?";
+	Statement s=connection.createStatement();
+	PreparedStatement ps1=connection.prepareStatement(updateSalary);
+	
+	ps1.setInt(1, 0);
+	ps1.setString(2,"samad");
+	ps1.setDouble(3, 2000);
+	
+	
+	
+	
+}
+}

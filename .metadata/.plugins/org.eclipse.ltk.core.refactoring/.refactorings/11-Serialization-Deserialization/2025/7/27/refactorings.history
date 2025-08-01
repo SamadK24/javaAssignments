@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename package &apos;Employeetest&apos; to &apos;com.swabhav.serialdeserial.test&apos;&#x0D;&#x0A;- Original project: &apos;11-Serialization-Deserialization&apos;&#x0D;&#x0A;- Original element: &apos;11-Serialization-Deserialization/src/Employeetest&apos;&#x0D;&#x0A;- Renamed element: &apos;11-Serialization-Deserialization/src/com.swabhav.serialdeserial.test&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename package &apos;Employeetest&apos;" flags="589830" hierarchical="false" id="org.eclipse.jdt.ui.rename.package" input="/src&lt;Employeetest" name="com.swabhav.serialdeserial.test" qualified="false" references="true" stamp="1751451999830" textual="false" version="1.0"/>
+</session>

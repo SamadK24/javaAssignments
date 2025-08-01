@@ -1,0 +1,44 @@
+package com.swabhav.BankingApp.model;
+
+public class Accounts {
+
+	private String name;
+	private int acc_id;
+	private double balance;
+	
+	
+	Accounts(){
+		
+	}
+	
+	public Accounts(String name,int acc_id,double balance) {
+		this.name=name;
+		this.acc_id=acc_id;
+		this.balance=balance;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getAcc_id() {
+		return acc_id;
+	}
+
+	public void setAcc_id(int acc_id) {
+		this.acc_id = acc_id;
+	}
+
+	public double getBalance() {
+		return balance;
+	}
+
+	public void setBalance(double balance) {
+		this.balance = balance;
+	}
+
+}

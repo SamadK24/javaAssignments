@@ -1,0 +1,11 @@
+package com.swabhav.BankingApp.model;
+
+public class BankService {
+
+	 public Accounts addAccount(int name,double balance) {
+		 
+		if(name!=null) {
+			
+		}
+	 }
+}

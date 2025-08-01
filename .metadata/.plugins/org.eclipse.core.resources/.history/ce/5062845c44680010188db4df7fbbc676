@@ -1,0 +1,38 @@
+package com.swabhav.GuitarFinal.model;
+
+import java.util.*;
+
+public class GuitarInventory {
+    private List<Final_Guitar> guitars = new ArrayList<>();
+    
+    public void addGuitar(Final_Guitar guitar) {
+    	guitars.add(guitar);
+    }
+
+
+    
+    public List<Final_Guitar> search(GuitarSpec searchSpec) {
+        List<Final_Guitar> matchingGuitars = new ArrayList<>();
+        for (Final_Guitar guitar : guitars) {
+            if (searchSpec.matches(guitar.getSpec())) {
+                matchingGuitars.add(guitar);
+            }
+        }
+        return matchingGuitars;
+    }
+
+    
+    public List<Final_Guitar> flexibleSearch(GuitarSpec searchSpec) {
+        List<Final_Guitar> matchingGuitars = new ArrayList<>();
+        for (Final_Guitar guitar : guitars) {
+            if (searchSpec.matchesPartially(guitar.getSpec())) {
+                matchingGuitars.add(guitar);
+            }
+        }
+        return matchingGuitars;
+    }
+
+    public List<Final_Guitar> getAllGuitars() {
+        return guitars;
+    }
+}

@@ -1,0 +1,204 @@
+package com.swabhav.GuitarFinal.test;
+
+import java.util.List;
+import java.util.Scanner;
+
+import com.swabhav.GuitarFinal.model.*;
+
+public class GuitarMain {
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        GuitarInventory inventory = new GuitarInventory();
+
+        System.out.print("Enter your role (Admin/User): ");
+        String role = scanner.nextLine().trim();
+
+        if (role.equalsIgnoreCase("Admin")) {
+            adminMenu(inventory);
+        } else if (role.equalsIgnoreCase("User")) {
+            userMenu(inventory);
+        } else {
+            System.out.println("Invalid role.");
+        }
+    }
+
+    private static void adminMenu(GuitarInventory inventory) {
+        while (true) {
+            System.out.println("\nAdmin Menu:");
+            System.out.println("1. Add Guitar");
+            System.out.println("2. View Inventory");
+            System.out.println("3. Exit");
+
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    addGuitar(inventory);
+                    break;
+                case "2":
+                    viewInventory(inventory);
+                    break;
+               
+                case "3":
+                    System.out.println("Exiting admin menu...");
+                    return;
+
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        }
+    }
+
+    private static void addGuitar(GuitarInventory inventory) {
+        System.out.print("Enter Serial Number: ");
+        String serialNumber = scanner.nextLine();
+
+        double price;
+        while (true) {
+            System.out.print("Enter Price: ");
+            try {
+                price = Double.parseDouble(scanner.nextLine());
+                if (price <= 0) {
+                    System.out.println("Price must be greater than 0.");
+                } else {
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid price.");
+            }
+        }
+
+        Builder builder = readEnumInput("Enter Builder", Builder.class);
+        System.out.print("Enter Model: ");
+        String model = scanner.nextLine();
+        Type type = readEnumInput("Enter Type", Type.class);
+        Wood backWood = readEnumInput("Enter Back Wood", Wood.class);
+        Wood topWood = readEnumInput("Enter Top Wood", Wood.class);
+
+        int numStrings = readInt("Enter Number of Strings");
+
+        GuitarSpec spec = new GuitarSpec(builder, model, type, backWood, topWood, numStrings);
+        Final_Guitar guitar = new Final_Guitar(serialNumber, price, spec);
+        inventory.addGuitar(guitar);
+
+        System.out.println("Guitar added successfully.");
+    }
+
+    private static void viewInventory(GuitarInventory inventory) {
+        List<Final_Guitar> guitars = inventory.getAllGuitars();
+        if (guitars.isEmpty()) {
+            System.out.println("No guitars in inventory.");
+            return;
+        }
+
+        System.out.println("\n=== Guitar Inventory ===");
+        for (Final_Guitar guitar : guitars) {
+            System.out.println(guitar);
+        }
+        System.out.println("=========================");
+    }
+
+    private static void userMenu(GuitarInventory inventory) {
+        while (true) {
+            System.out.println("\nUser Menu:");
+            System.out.println("1. Search Guitar");
+            System.out.println("2. Exit");
+
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    searchGuitars(inventory);
+                    break;
+                case "2":
+                    return;
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        }
+    }
+
+    private static void searchGuitars(GuitarInventory inventory) {
+        System.out.println("Enter search criteria (press Enter to skip a field):");
+
+        Builder builder = readEnumInputOptional("Builder", Builder.class);
+        System.out.print("Model: ");
+        String model = scanner.nextLine();
+        Type type = readEnumInputOptional("Type", Type.class);
+        Wood backWood = readEnumInputOptional("Back Wood", Wood.class);
+        Wood topWood = readEnumInputOptional("Top Wood", Wood.class);
+
+        int numStrings = readIntOptional("Number of Strings");
+
+        GuitarSpec searchSpec = new GuitarSpec(builder, model, type, backWood, topWood, numStrings);
+        List<Final_Guitar> matchingGuitars = inventory.flexibleSearch(searchSpec);
+
+        if (matchingGuitars.isEmpty()) {
+            System.out.println("No matching guitars found.");
+        } else {
+            System.out.println("\n=== Matching Guitars ===");
+            for (Final_Guitar guitar : matchingGuitars) {
+                System.out.println(guitar);
+            }
+            System.out.println("=========================");
+        }
+    }
+
+    
+    private static <T extends Enum<T>> T readEnumInput(String prompt, Class<T> enumClass) {
+        while (true) {
+            System.out.print(prompt + " (" + String.join(", ", enumNames(enumClass)) + "): ");
+            String input = scanner.nextLine().trim().toUpperCase();
+            try {
+                return Enum.valueOf(enumClass, input);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid " + enumClass.getSimpleName() + ". Please try again.");
+            }
+        }
+    }
+
+    private static <T extends Enum<T>> T readEnumInputOptional(String fieldName, Class<T> enumClass) {
+        System.out.print(fieldName + " (" + String.join(", ", enumNames(enumClass)) + "): ");
+        String input = scanner.nextLine().trim().toUpperCase();
+        if (input.isEmpty()) return null;
+
+        try {
+            return Enum.valueOf(enumClass, input);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid " + enumClass.getSimpleName() + ". Skipping");
+            return null;
+        }
+    }
+
+    private static <T extends Enum<T>> String[] enumNames(Class<T> enumClass) {
+        return java.util.Arrays.stream(enumClass.getEnumConstants())
+                .map(Enum::name)
+                .toArray(String[]::new);
+    }
+
+    private static int readInt(String prompt) {
+        while (true) {
+            System.out.print(prompt + ": ");
+            try {
+                return Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number.");
+            }
+        }
+    }
+
+    private static int readIntOptional(String prompt) {
+        System.out.print(prompt + ": ");
+        String input = scanner.nextLine();
+        if (input.isEmpty()) return 0;
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number. Skipping");
+            return 0;
+        }
+    }
+}

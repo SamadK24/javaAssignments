@@ -1,0 +1,75 @@
+package com.swabhav.BankingApp.model;
+
+import java.time.LocalDateTime;
+
+public class Transactions {
+	private int transaction_id;
+	private int acc_id;
+	private double amount;
+	private TransactionType type;
+	private String note;
+	private LocalDateTime timestamp;
+
+
+	public Transactions() {
+	}
+
+	public Transactions(int transaction_id, int acc_id, double amount, TransactionType type,LocalDateTime timestamp, String note) {
+		this.transaction_id = transaction_id;
+		this.acc_id = acc_id;
+		this.amount = amount;
+		this.type = type;
+		this.timestamp=timestamp;
+		this.note = note;
+
+	}
+
+	public LocalDateTime getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(LocalDateTime timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	public int getTransaction_id() {
+		return transaction_id;
+	}
+
+	public void setTransaction_id(int transaction_id) {
+		this.transaction_id = transaction_id;
+	}
+
+	public int getAcc_id() {
+		return acc_id;
+	}
+
+	public void setAcc_id(int acc_id) {
+		this.acc_id = acc_id;
+	}
+
+	public double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(double amount) {
+		this.amount = amount;
+	}
+
+	public TransactionType getType() {
+		return type;
+	}
+
+	public void setType(TransactionType type) {
+		this.type = type;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+}

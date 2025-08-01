@@ -1,0 +1,27 @@
+package com.swabhav.BankingApp.model;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DBUtil {
+
+    // Constants: fixed values used to connect to your MySQL database
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/BankingApp"; // Your DB name
+    private static final String DB_USER = "root"; // Your MySQL username
+    private static final String DB_PASSWORD = "samadKasu12@#"; // Replace with your MySQL password
+
+    // Static method to get a connection to the database
+    public static Connection getConnection() throws SQLException {
+        try {
+            // Load MySQL JDBC Driver (optional from JDBC 4.0+, but good practice)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        // This line creates and returns a connection to the database
+        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+    }
+}
+

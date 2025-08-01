@@ -1,0 +1,59 @@
+package com.swabhav.BankingApp.ui;
+
+import java.util.Scanner;
+
+import com.swabhav.BankingApp.model.InvalidAmountException;
+import com.swabhav.BankingApp.model.InvalidInputException;
+import com.swabhav.BankingApp.model.Validator;
+
+public class InputUtil {
+	 private static Scanner sc = new Scanner(System.in);
+
+	    public static String readValidName(String prompt) {
+	        while (true) {
+	            System.out.print(prompt);
+	            String name = sc.nextLine();
+	            try {
+	                Validator.validateName(name);
+	                return name;
+	            } catch (InvalidInputException e) {
+	                System.out.println("❌ " + e.getMessage());
+	            }
+	        }
+	    }
+
+	    public static double readValidAmount(String prompt) {
+	        while (true) {
+	            System.out.print(prompt);
+	            try {
+	                double amount = Double.parseDouble(sc.nextLine());
+	                Validator.validateAmount(amount);
+	                return amount;
+	            } catch (NumberFormatException e) {
+	                System.out.println("❌ Please enter a valid number.");
+	            } catch (InvalidAmountException e) {
+	                System.out.println("❌ " + e.getMessage());
+	            }
+	        }
+	    }
+
+	    public static String readNonEmptyInput(String prompt) {
+	        while (true) {
+	            System.out.print(prompt);
+	            String input = sc.nextLine();
+	            if (!input.trim().isEmpty()) return input;
+	            System.out.println("❌ This field cannot be empty.");
+	        }
+	    }
+
+	    public static int readInt(String prompt) {
+	        while (true) {
+	            System.out.print(prompt);
+	            try {
+	                return Integer.parseInt(sc.nextLine());
+	            } catch (NumberFormatException e) {
+	                System.out.println("❌ Please enter a valid number.");
+	            }
+	        }
+	    }
+}

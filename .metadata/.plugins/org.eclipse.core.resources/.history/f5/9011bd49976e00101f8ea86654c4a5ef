@@ -1,0 +1,124 @@
+package com.swabhav.BankingApp.ui;
+
+import java.util.Scanner;
+
+import com.swabhav.BankingApp.model.BankService;
+import com.swabhav.BankingApp.model.InvalidAmountException;
+import com.swabhav.BankingApp.model.InvalidInputException;
+import com.swabhav.BankingApp.model.AccountNotFoundException;
+import com.swabhav.BankingApp.model.InsufficientBalanceException;
+
+public class CustomerUI {
+	private static Scanner sc = new Scanner(System.in);
+    private static BankService bankService = new BankService();
+
+    public static void loginAndShowCustomerMenu() {
+        System.out.print("Enter Username: ");
+        String username = sc.nextLine();
+        System.out.print("Enter Password: ");
+        String password = sc.nextLine();
+
+        int accId = bankService.authenticateCustomer(username, password); // returns acc_id or -1
+        if (accId == -1) {
+            System.out.println("Invalid credentials or inactive account.");
+            return;
+        }
+
+        showCustomerMenu(accId);
+    }
+
+    private static void showCustomerMenu(int accId) {
+        while (true) {
+            System.out.println("\n===== Customer Menu =====");
+            System.out.println("1. View Balance");
+            System.out.println("2. Deposit");
+            System.out.println("3. Withdraw");
+            System.out.println("4. Transfer Money");
+            System.out.println("5. View Transaction History");
+            System.out.println("6. Logout");
+            System.out.print("Enter choice: ");
+
+            int choice = -1;
+            try {
+                choice = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Enter a number.");
+                continue;
+            }
+
+            switch (choice) {
+                case 1:
+                    bankService.checkBalance(accId);
+                    break;
+
+                case 2:
+                    handleDeposit(accId);
+                    break;
+
+                case 3:
+                    handleWithdraw(accId);
+                    break;
+
+                case 4:
+                    handleTransfer(accId);
+                    break;
+
+                case 5:
+                    bankService.transactionHistory(accId);
+                    break;
+
+                case 6:
+                    System.out.println("Logging out...");
+                    return;
+
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+
+    private static void handleDeposit(int accId) {
+        System.out.print("Enter amount to deposit: ");
+        try {
+            double amount = Double.parseDouble(sc.nextLine());
+            bankService.deposit(accId, amount);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid amount.");
+        } catch (InvalidAmountException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private static void handleWithdraw(int accId) {
+        System.out.print("Enter amount to withdraw: ");
+        try {
+            double amount = Double.parseDouble(sc.nextLine());
+            bankService.withDraw(accId, amount);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid amount.");
+        } catch (InvalidAmountException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private static void handleTransfer(int fromAccId) {
+        System.out.print("Enter recipient Account ID: ");
+        try {
+            int toAccId = Integer.parseInt(sc.nextLine());
+            if (!bankService.isValidAccount(toAccId)) {
+                System.out.println("Invalid recipient account.");
+                return;
+            }
+
+            System.out.print("Enter amount to transfer: ");
+            double amount = Double.parseDouble(sc.nextLine());
+
+            bankService.transferMoney(fromAccId, toAccId, amount);
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+        } catch (InvalidAmountException | InvalidInputException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+}

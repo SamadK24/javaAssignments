@@ -1,0 +1,73 @@
+package com.swabhav.BankingApp.ui;
+
+import java.util.Scanner;
+
+import com.swabhav.BankingApp.model.Accounts;
+import com.swabhav.BankingApp.model.BankService;
+import com.swabhav.BankingApp.model.InvalidAmountException;
+import com.swabhav.BankingApp.model.InvalidInputException;
+
+
+
+public class AdminUI {
+	 private static Scanner sc = new Scanner(System.in);
+	    private static BankService bankService = new BankService();
+
+	    public static void loginAndShowAdminMenu() {
+	        System.out.print("Enter Admin Username: ");
+	        String username = sc.nextLine();
+	        System.out.print("Enter Admin Password: ");
+	        String password = sc.nextLine();
+
+	        if (!username.equals("admin") || !password.equals("admin123")) {
+	            System.out.println("Invalid admin credentials.");
+	            return;
+	        }
+
+	        showAdminMenu();
+	    }
+
+	    public static void showAdminMenu() {
+	        while (true) {
+	            System.out.println("\n===== Admin Menu =====");
+	            System.out.println("1. Add New Account");
+	            System.out.println("2. View All Accounts");
+	            System.out.println("3. Back to Main Menu");
+	            System.out.print("Enter choice: ");
+
+	            int choice = -1;
+	            try {
+	                choice = Integer.parseInt(sc.nextLine());
+	            } catch (NumberFormatException e) {
+	                System.out.println("Invalid input! Enter a number.");
+	                continue;
+	            }
+
+	            switch (choice) {
+	                case 1:
+	                    String name = InputUtil.readValidName("Enter Account Holder's Name: ");
+	                    String username = InputUtil.readNonEmptyInput("Set Username: ");
+	                    String password = InputUtil.readNonEmptyInput("Set Password: ");
+	                    double balance = InputUtil.readValidAmount("Enter Initial Balance: ");
+	                    Accounts acc = new Accounts();
+	                    acc.setName(name);
+	                    acc.setUsername(username);
+	                    acc.setPassword(password);
+	                    acc.setBalance(balance);
+
+
+	                    break;
+
+	                case 2:
+	                    bankService.viewAllAccounts();
+	                    break;
+
+	                case 3:
+	                    return;
+
+	                default:
+	                    System.out.println("Invalid choice. Try again.");
+	            }
+	        }
+	    }
+}

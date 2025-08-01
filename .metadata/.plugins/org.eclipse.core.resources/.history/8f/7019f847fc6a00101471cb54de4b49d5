@@ -1,0 +1,88 @@
+package com.swabhav.BankingApp.test;
+
+import java.util.Scanner;
+
+import com.swabhav.BankingApp.model.BankService;
+
+public class BankingAppTest {
+	public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        BankService bank = new BankService();
+
+        while (true) {
+            System.out.println("\n========== Bank System Menu ==========");
+            System.out.println("1. Add Bank Account");
+            System.out.println("2. Check Balance");
+            System.out.println("3. Deposit Money");
+            System.out.println("4. Withdraw Money");
+            System.out.println("5. Transfer Money");
+            System.out.println("6. View Transaction History");
+            System.out.println("7. Exit");
+            System.out.print("Enter your choice (1-7): ");
+
+            int choice;
+            try {
+                choice = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("❌ Invalid input. Please enter a number from 1 to 7.");
+                continue;
+            }
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter account holder name: ");
+                    String name = sc.nextLine();
+                    System.out.print("Enter initial deposit amount: ");
+                    double initialAmount = Double.parseDouble(sc.nextLine());
+                    bank.addAccount(name, initialAmount);
+                    break;
+
+                case 2:
+                    System.out.print("Enter account ID to check balance: ");
+                    int balanceId = Integer.parseInt(sc.nextLine());
+                    bank.checkBalance(balanceId);
+                    break;
+
+                case 3:
+                    System.out.print("Enter account ID to deposit into: ");
+                    int depId = Integer.parseInt(sc.nextLine());
+                    System.out.print("Enter amount to deposit: ");
+                    double depAmt = Double.parseDouble(sc.nextLine());
+                    bank.deposit(depId, depAmt);
+                    break;
+
+                case 4:
+                    System.out.print("Enter account ID to withdraw from: ");
+                    int withId = Integer.parseInt(sc.nextLine());
+                    System.out.print("Enter amount to withdraw: ");
+                    double withAmt = Double.parseDouble(sc.nextLine());
+                    bank.withDraw(withId, withAmt);
+                    break;
+
+                case 5:
+                    System.out.print("Enter sender's account ID: ");
+                    int senderId = Integer.parseInt(sc.nextLine());
+                    System.out.print("Enter receiver's account ID: ");
+                    int receiverId = Integer.parseInt(sc.nextLine());
+                    System.out.print("Enter amount to transfer: ");
+                    double transferAmt = Double.parseDouble(sc.nextLine());
+                    bank.transferMoney(senderId, receiverId, transferAmt);
+                    break;
+
+                case 6:
+                    System.out.print("Enter account ID to view transaction history: ");
+                    int histId = Integer.parseInt(sc.nextLine());
+                    bank.transactionHistory(histId);
+                    break;
+
+                case 7:
+                    System.out.println("👋 Thank you for using our banking system. Goodbye!");
+                    sc.close();
+                    System.exit(0);
+
+                default:
+                    System.out.println("❌ Invalid choice. Please select a valid option.");
+            }
+        }
+    }
+}

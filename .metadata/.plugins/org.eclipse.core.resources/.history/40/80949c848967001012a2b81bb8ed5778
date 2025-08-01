@@ -1,0 +1,68 @@
+package com.swabhav.GuitarFinal.model;
+
+public class GuitarSpec {
+    private Builder builder;
+    private String model;
+    private int numStrings;
+    private Type type;
+    private Wood backwood;
+    private Wood topwood;
+
+    public GuitarSpec(Builder builder, String model, int numStrings, Type type, Wood backwood, Wood topwood) {
+        this.builder = builder;
+        this.model = model;
+        this.numStrings = numStrings;
+        this.type = type;
+        this.backwood = backwood;
+        this.topwood = topwood;
+    }
+
+    public Builder getBuilder() {
+        return builder;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public int getNumStrings() {
+        return numStrings;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Wood getBackwood() {
+        return backwood;
+    }
+
+    public Wood getTopwood() {
+        return topwood;
+    }
+
+    //Sab field match hona chahiye
+    public boolean matches(GuitarSpec otherSpec) {
+        if (!builder.equals(otherSpec.builder)) return false;
+        if (!model.equalsIgnoreCase(otherSpec.model)) return false;
+        if (numStrings != otherSpec.numStrings) return false;
+        if (!type.equals(otherSpec.type)) return false;
+        if (!backwood.equals(otherSpec.backwood)) return false;
+        if (!topwood.equals(otherSpec.topwood)) return false;
+        return true;
+    }
+
+    //partial match bhi chalega
+    public boolean matchesPartially(GuitarSpec otherSpec) {
+        if (builder != null && !builder.equals(otherSpec.builder)) return false;
+        if (model != null && !model.isEmpty() &&
+            (otherSpec.model == null || !otherSpec.model.toLowerCase().contains(model.toLowerCase())))
+            return false;
+        if (type != null && !type.equals(otherSpec.type)) return false;
+        if (backwood != null && !backwood.equals(otherSpec.backwood)) return false;
+        if (topwood != null && !topwood.equals(otherSpec.topwood)) return false;
+        if (numStrings != 0 && numStrings != otherSpec.numStrings) return false;
+
+        return true;
+    }
+}

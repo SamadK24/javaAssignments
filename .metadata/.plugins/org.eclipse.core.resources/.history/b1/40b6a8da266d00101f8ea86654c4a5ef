@@ -1,0 +1,104 @@
+package test;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+@WebServlet("/book")
+public class ConferenceBooking extends HttpServlet{
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+		      throws ServletException, IOException {
+		        
+		        response.setContentType("text/html");
+		        PrintWriter out = response.getWriter();
+		        
+		        String name = request.getParameter("name");
+		        String email = request.getParameter("email");
+		        String seatsStr = request.getParameter("seats");
+		        String dateStr = request.getParameter("date");
+		        String session = request.getParameter("session");
+		        
+		        StringBuilder errors = new StringBuilder();
+		        
+		        // Validate name
+		        if (name == null || name.trim().isEmpty()) {
+		            errors.append("<li>Attendee Name is required.</li>");
+		        }
+		        
+		        // Validate email
+		        if (email == null || email.trim().isEmpty()) {
+		            errors.append("<li>Email is required.</li>");
+		        }
+		        
+		        int seats = 0;
+		        try {
+		            seats = Integer.parseInt(seatsStr);
+		            if (seats < 1 || seats > 5) {
+		                errors.append("<li>Number of seats must be between 1 and 5.</li>");
+		            }
+		        } catch (NumberFormatException e) {
+		            errors.append("<li>Valid number of seats is required.</li>");
+		        }
+		        
+		        // Validate date format (optional)
+		        if (dateStr == null || dateStr.trim().isEmpty()) {
+		            errors.append("<li>Date of Attendance is required.</li>");
+		        } else {
+		            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		            sdf.setLenient(false);
+		            try {
+		                sdf.parse(dateStr);
+		            } catch (ParseException e) {
+		                errors.append("<li>Date must be in valid format: yyyy-MM-dd.</li>");
+		            }
+		        }
+		        
+		        // Validate session type
+		        if (session == null || session.trim().isEmpty()) {
+		            errors.append("<li>Session Type is required.</li>");
+		        } else {
+		            session = session.trim();
+		            if (!session.equals("Technical") && !session.equals("Workshop") && !session.equals("Networking")) {
+		                errors.append("<li>Invalid Session Type selected.</li>");
+		            }
+		        }
+		        
+		        // Output
+		        out.println("<html><head><title>Booking Confirmation</title></head><body>");
+		        
+		        if (errors.length() > 0) {
+		            out.println("<h3>Booking Failed with following errors:</h3><ul>");
+		            out.println(errors.toString());
+		            out.println("</ul>");
+		            out.println("<a href=\"conference_booking.html\">Go Back</a>");
+		        } else {
+		            out.println("<h2>Booking Confirmed!</h2>");
+		            out.println("<p><strong>Attendee Name:</strong> " + escapeHtml(name) + "</p>");
+		            out.println("<p><strong>Email:</strong> " + escapeHtml(email) + "</p>");
+		            out.println("<p><strong>Number of Seats:</strong> " + seats + "</p>");
+		            out.println("<p><strong>Date of Attendance:</strong> " + escapeHtml(dateStr) + "</p>");
+		            out.println("<p><strong>Session Type:</strong> " + escapeHtml(session) + "</p>");
+		            out.println("<hr>");
+		            out.println("<p>Thank you for booking with us. Enjoy the conference!</p>");
+		            out.println("<a href=\"conference_booking.html\">Book Another</a>");
+		        }
+		        
+		        out.println("</body></html>");
+		    }
+		    
+		    // Simple helper method to escape HTML special characters
+		    private String escapeHtml(String input) {
+		        if(input == null) return "";
+		        return input.replace("&", "&amp;")
+		                    .replace("<", "&lt;")
+		                    .replace(">", "&gt;")
+		                    .replace("\"", "&quot;")
+		                    .replace("'", "&#x27;");
+		    }
+}

@@ -1,0 +1,16 @@
+package com.swabhav.jdbc;
+
+import java.sql.DriverManager;
+
+public class JdbcDemo {
+public static void main(String[] args) throws Exception {
+	
+	//register driver
+	Class.forName("com.mysql.cj.jdbc.Driver");
+	
+	//create connection
+	DriverManager.getConnection("jdbc:mysql://localhost:3306/jdbc_demo","root","samadKasu12@#");
+	System.out.println("Connection Established Successfully");
+	
+}
+}

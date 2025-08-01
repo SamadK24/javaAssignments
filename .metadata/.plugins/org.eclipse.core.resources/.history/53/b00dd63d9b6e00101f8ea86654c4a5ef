@@ -1,0 +1,86 @@
+package com.swabhav.BankingApp.ui;
+
+import java.util.Scanner;
+
+import com.swabhav.BankingApp.model.Accounts;
+import com.swabhav.BankingApp.model.BankService;
+import com.swabhav.BankingApp.model.InvalidAmountException;
+import com.swabhav.BankingApp.model.InvalidInputException;
+
+
+
+public class AdminUI {
+	private static final String ADMIN_USERNAME = "admin";
+	private static final String ADMIN_PASSWORD = "admin123";
+
+	private static Scanner sc = new Scanner(System.in);
+	private static BankService bankService = new BankService();
+
+	public static boolean loginAsAdmin() {
+		System.out.print("Enter Admin Username: ");
+		String username = sc.nextLine();
+		System.out.print("Enter Admin Password: ");
+		String password = sc.nextLine();
+
+		return username.equals(ADMIN_USERNAME) && password.equals(ADMIN_PASSWORD);
+	}
+
+	public static void showAdminMenu() {
+		while (true) {
+			System.out.println("\n===== Admin Menu =====");
+			System.out.println("1. Add New Account");
+			System.out.println("2. View All Accounts");
+			System.out.println("3. Back to Main Menu");
+			System.out.print("Enter choice: ");
+
+			int choice = -1;
+			try {
+				choice = Integer.parseInt(sc.nextLine());
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input! Enter a number.");
+				continue;
+			}
+
+			switch (choice) {
+			case 1:
+				addAccount();
+				break;
+			case 2:
+				viewAllAccounts();
+				break;
+			case 3:
+				return;
+			default:
+				System.out.println("Invalid choice. Try again.");
+			}
+		}
+	}
+
+	private static void addAccount() {
+		try {
+			Accounts acc = new Accounts();
+
+			System.out.print("Enter Account Holder's Name: ");
+			acc.setName(sc.nextLine());
+
+			System.out.print("Set Username: ");
+			acc.setUsername(sc.nextLine());
+
+			System.out.print("Set Password: ");
+			acc.setPassword(sc.nextLine());
+
+			System.out.print("Enter Initial Balance: ");
+			acc.setBalance(Double.parseDouble(sc.nextLine()));
+
+			bankService.addAccountWithCredentials(acc);
+		} catch (InvalidInputException | InvalidAmountException e) {
+			System.out.println("Validation Error: " + e.getMessage());
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid balance input. Must be a number.");
+		}
+	}
+
+	private static void viewAllAccounts() {
+		bankService.viewAllAccounts();
+	}
+}

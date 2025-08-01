@@ -1,0 +1,9 @@
+package test;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+
+@WebServlet("/redirect")
+public class RedirectDemo extends HttpServlet {
+
+}

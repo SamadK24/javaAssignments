@@ -1,0 +1,157 @@
+package com.swabhav.BankingApp.test;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import java.util.Scanner;
+
+import com.swabhav.BankingApp.model.AccountNotFoundException;
+import com.swabhav.BankingApp.model.Accounts;
+import com.swabhav.BankingApp.model.BankService;
+import com.swabhav.BankingApp.model.InsufficientBalanceException;
+import com.swabhav.BankingApp.model.Validator;
+import com.swabhav.BankingApp.model.InvalidInputException;
+import com.swabhav.BankingApp.model.InvalidAmountException;
+
+public class BankingAppTest {
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		BankService bank = new BankService();
+		boolean running = true;
+
+		while (running) {
+			System.out.println("\n===== Welcome to Banking System =====");
+			System.out.println("1. Add Bank Account");
+			System.out.println("2. Check Balance");
+			System.out.println("3. Transfer Money");
+			System.out.println("4. Deposit Money");
+			System.out.println("5. Withdraw Money");
+			System.out.println("6. Transaction History");
+			System.out.println("7. Delete Account");
+			System.out.println("8. Exit");
+			System.out.print("Enter your choice: ");
+
+			int choice = -1;
+			try {
+				choice = Integer.parseInt(sc.nextLine());
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input. Please enter a number.");
+				continue;
+			}
+
+			switch (choice) {
+			case 1:
+				try {
+					System.out.print("Enter account holder's name: ");
+					String name = sc.nextLine().trim();
+
+					// Validate name manually here before setting it
+					if (name.isEmpty() || !name.matches("[a-zA-Z ]+")) {
+						throw new InvalidInputException("Name must contain only alphabets and not be empty.");
+					}
+
+					double initialAmount = getValidDouble(sc, "Enter initial deposit amount: ");
+
+					Accounts newAcc = new Accounts();
+					newAcc.setName(name);
+					newAcc.setBalance(initialAmount);
+
+					bank.addAccount(newAcc);
+				} catch (InvalidInputException | InvalidAmountException e) {
+					System.out.println("error " + e.getMessage());
+				}
+				break;
+
+			case 2:
+				try {
+					int accId = getValidInt(sc, "Enter Account ID: ");
+					bank.checkBalance(accId);
+				} catch (AccountNotFoundException e) {
+					System.out.println(e.getMessage());
+				}
+				break;
+
+			case 3:
+				try {
+					int senderId = getValidInt(sc, "Enter Sender Account ID: ");
+					int receiverId = getValidInt(sc, "Enter Receiver Account ID: ");
+					double amount = getValidDouble(sc, "Enter amount to transfer: ");
+					bank.transferMoney(senderId, receiverId, amount);
+				} catch (InvalidAmountException | AccountNotFoundException | InsufficientBalanceException
+						| InvalidInputException e) {
+					System.out.println(e.getMessage());
+				}
+				break;
+
+			case 4:
+				try {
+					int accId = getValidInt(sc, "Enter Account ID: ");
+					double amount = getValidDouble(sc, "Enter amount to deposit: ");
+					bank.deposit(accId, amount);
+				} catch (InvalidAmountException | AccountNotFoundException e) {
+					System.out.println(e.getMessage());
+				}
+				break;
+
+			case 5:
+				try {
+					int wId = getValidInt(sc, "Enter Account ID to withdraw from: ");
+					double wAmt = getValidDouble(sc, "Enter amount to withdraw: ");
+					bank.withDraw(wId, wAmt);
+				} catch (AccountNotFoundException | InsufficientBalanceException | InvalidAmountException e) {
+					System.out.println(e.getMessage());
+				}
+				break;
+
+			case 6:
+				try {
+					int tId = getValidInt(sc, "Enter Account ID to view transactions: ");
+					bank.transactionHistory(tId);
+				} catch (AccountNotFoundException e) {
+					System.out.println(e.getMessage());
+				}
+				break;
+			case 7:
+				System.out.println("Enter Account ID to delete:");
+				int deleteId = sc.nextInt();
+				try {
+					service.deleteAccount(deleteId);
+				} catch (InvalidInputException | AccountNotFoundException e) {
+					System.out.println("❌ " + e.getMessage());
+				}
+				break;
+
+			case 8:
+				running = false;
+				System.out.println("Exiting,Thank you!");
+				break;
+
+			default:
+				System.out.println("Invalid choice. Please try again.");
+			}
+		}
+		sc.close();
+	}
+
+	private static int getValidInt(Scanner sc, String prompt) {
+		while (true) {
+			System.out.print(prompt);
+			try {
+				return Integer.parseInt(sc.nextLine());
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input. Please enter an integer.");
+			}
+		}
+	}
+
+	private static double getValidDouble(Scanner sc, String prompt) {
+		while (true) {
+			System.out.print(prompt);
+			try {
+				return Double.parseDouble(sc.nextLine());
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input. Please enter a valid number.");
+			}
+		}
+	}
+}

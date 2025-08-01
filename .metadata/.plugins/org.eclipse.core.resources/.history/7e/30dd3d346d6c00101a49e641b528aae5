@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<form action="converter" method="post">
+  <label for="from-currency">From currency:</label>
+  <select name="from-currency" id="from-currency">
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="INR">INR </option>
+  </select>
+  <label for="to-currency">To currency:</label>
+  <select name="to-currency" id="to-currency">
+    <option value="USD">USD </option>
+    <option value="EUR">EUR </option>
+    <option value="INR">INR </option>
+  </select>
+  <label for="amount">Amount:</label>
+  <input type="number" name="amount" id="amount" min="0" step="any" required>
+  <input type="submit" value="Convert">
+</form>
+
+
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+package com.swabhav.ServletDemo.test;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+
+@WebServlet("/login")
+public class Example1 extends HttpServlet{
+ 
+	
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	    
+		
+		String name=req.getParameter("username");
+		PrintWriter pw=resp.getWriter();
+		String password=req.getParameter("password").trim();
+		
+		password="1234";
+		
+		if(name.isEmpty()) {
+			pw.write("Welcome guest");
+		}
+		else if(name==password) {
+			pw.write("Welcome "+name);
+		}
+		else {
+			pw.write("Welcome admin");
+		}
+		
+		
+		
+		
+		
+
+		
+	}
+	
+}

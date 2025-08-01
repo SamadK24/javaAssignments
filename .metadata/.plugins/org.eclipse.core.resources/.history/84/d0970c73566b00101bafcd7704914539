@@ -1,0 +1,317 @@
+package com.swabhav.BankingApp.model;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+
+public class BankService {
+
+	public void addAccount(Accounts acc) {
+	    String insertQuery = "INSERT INTO accounts (name, balance) VALUES (?, ?)";
+
+	    try (Connection conn = DBUtil.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
+
+	        stmt.setString(1, acc.getName());
+	        stmt.setDouble(2, acc.getBalance());
+
+	        int rowsAffected = stmt.executeUpdate();
+	        if (rowsAffected > 0) {
+	            ResultSet generatedKeys = stmt.getGeneratedKeys();
+	            if (generatedKeys.next()) {
+	                int accountId = generatedKeys.getInt(1);
+	                System.out.println("Account created successfully with Account ID: " + accountId);
+	            } else {
+	                System.out.println("Account created successfully, but could not fetch Account ID.");
+	            }
+	        } else {
+	            System.out.println("Failed to create account.");
+	        }
+
+	    } catch (SQLException e) {
+	        System.out.println("Database Error: " + e.getMessage());
+	    }
+	}
+
+
+
+	public void checkBalance(int acc_id) {
+		String balanceQuery = "SELECT balance FROM accounts where acc_id=?";
+		try (Connection conn = DBUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(balanceQuery)) {
+
+			stmt.setInt(1, acc_id);
+
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				double balance = rs.getDouble("balance");
+				System.out.println("Current Balance: ₹" + balance);
+			} else {
+				System.out.println("Account not found!");
+			}
+		}
+
+		catch (SQLException e) {
+			System.out.println("Database Error: " + e.getMessage());
+		}
+
+	}
+
+	public void deposit(int acc_id, double amount) {
+		String depositQuery = "UPDATE accounts SET balance = balance + ? WHERE acc_id = ?";
+		String transactionQuery = "INSERT INTO transactions (acc_id, type, amount, timestamp, note) VALUES (?, 'DEPOSIT', ?, NOW(), ?)";
+
+		try (Connection conn = DBUtil.getConnection()) {
+			conn.setAutoCommit(false); // Begin transaction manually
+
+			try (PreparedStatement depositStmt = conn.prepareStatement(depositQuery);
+					PreparedStatement txnStmt = conn.prepareStatement(transactionQuery)) {
+				// 1. Update account balance
+				depositStmt.setDouble(1, amount);
+				depositStmt.setInt(2, acc_id);
+
+				int rowsAffected = depositStmt.executeUpdate();
+				if (rowsAffected == 0) {
+					System.out.println("Deposit failed: Account not found.");
+					conn.rollback();
+					return;
+				}
+
+				// 2. Insert transaction record
+				String note = "Deposited ₹" + amount;
+				txnStmt.setInt(1, acc_id);
+				txnStmt.setDouble(2, amount);
+				txnStmt.setString(3, note);
+
+				txnStmt.executeUpdate();
+
+				conn.commit(); // Commit both operations
+				System.out.println("Deposit successful! ₹" + amount + " added to account.");
+
+			} catch (SQLException e) {
+				conn.rollback(); // Rollback on any failure inside inner block
+				System.out.println("Deposit failed. Transaction rolled back.");
+				e.printStackTrace();
+			}
+
+		} catch (SQLException e) {
+			System.out.println("Database connection error: " + e.getMessage());
+		}
+	}
+
+	public void transferMoney(int senderId, int receiverId, double amount) {
+	    String getBalanceQuery = "SELECT balance FROM accounts WHERE acc_id = ?";
+	    String checkAccountQuery = "SELECT COUNT(*) FROM accounts WHERE acc_id = ?";
+	    String debitQuery = "UPDATE accounts SET balance = balance - ? WHERE acc_id = ?";
+	    String creditQuery = "UPDATE accounts SET balance = balance + ? WHERE acc_id = ?";
+	    String transactionDQuery = "INSERT INTO transactions(acc_id, type, amount, timestamp, note) VALUES (?, 'DEBIT', ?, NOW(), ?)";
+	    String transactionCQuery = "INSERT INTO transactions(acc_id, type, amount, timestamp, note) VALUES (?, 'CREDIT', ?, NOW(), ?)";
+
+	    try (Connection conn = DBUtil.getConnection()) {
+	        conn.setAutoCommit(false);
+
+	        try (
+	            PreparedStatement checkSender = conn.prepareStatement(checkAccountQuery);
+	            PreparedStatement checkReceiver = conn.prepareStatement(checkAccountQuery);
+	            PreparedStatement getSenderBalance = conn.prepareStatement(getBalanceQuery);
+	            PreparedStatement debitStmt = conn.prepareStatement(debitQuery);
+	            PreparedStatement creditStmt = conn.prepareStatement(creditQuery);
+	            PreparedStatement debitTxn = conn.prepareStatement(transactionDQuery);
+	            PreparedStatement creditTxn = conn.prepareStatement(transactionCQuery)
+	        ) {
+	            // 🔍 Check if sender exists
+	            checkSender.setInt(1, senderId);
+	            ResultSet rsSender = checkSender.executeQuery();
+	            rsSender.next();
+	            if (rsSender.getInt(1) == 0) {
+	                System.out.println("Sender account does not exist.");
+	                return;
+	            }
+
+	            // 🔍 Check if receiver exists
+	            checkReceiver.setInt(1, receiverId);
+	            ResultSet rsReceiver = checkReceiver.executeQuery();
+	            rsReceiver.next();
+	            if (rsReceiver.getInt(1) == 0) {
+	                System.out.println("Receiver account does not exist.");
+	                return;
+	            }
+
+	            // 💰 Check sender's balance
+	            getSenderBalance.setInt(1, senderId);
+	            ResultSet rsBalance = getSenderBalance.executeQuery();
+	            rsBalance.next();
+	            double currentBalance = rsBalance.getDouble("balance");
+
+	            if (currentBalance < amount) {
+	                System.out.println("Insufficient balance in sender's account.");
+	                return;
+	            }
+
+	            // 🧾 Perform debit
+	            debitStmt.setDouble(1, amount);
+	            debitStmt.setInt(2, senderId);
+
+	            // 🧾 Perform credit
+	            creditStmt.setDouble(1, amount);
+	            creditStmt.setInt(2, receiverId);
+
+	            int debitRows = debitStmt.executeUpdate();
+	            int creditRows = creditStmt.executeUpdate();
+
+	            if (debitRows == 0 || creditRows == 0) {
+	                System.out.println("Transfer failed: Could not update balances.");
+	                conn.rollback();
+	                return;
+	            }
+
+	            // ✍️ Transaction note
+	            String noteForSender = "Transfer to acc_id " + receiverId + " on " + java.time.LocalDateTime.now();
+	            String noteForReceiver = "Transfer from acc_id " + senderId + " on " + java.time.LocalDateTime.now();
+
+	            // 🧾 Log DEBIT transaction
+	            debitTxn.setInt(1, senderId);
+	            debitTxn.setDouble(2, amount);
+	            debitTxn.setString(3, noteForSender);
+	            debitTxn.executeUpdate();
+
+	            // 🧾 Log CREDIT transaction
+	            creditTxn.setInt(1, receiverId);
+	            creditTxn.setDouble(2, amount);
+	            creditTxn.setString(3, noteForReceiver);
+	            creditTxn.executeUpdate();
+
+	            //Commit
+	            conn.commit();
+	            System.out.println("Transfer of ₹" + amount + " from acc_id " + senderId + " to acc_id " + receiverId + " successful.");
+
+	        } catch (SQLException e) {
+	            conn.rollback();
+	            System.out.println("Transfer failed. Transaction rolled back.");
+	            e.printStackTrace();
+	        }
+
+	    } catch (SQLException e) {
+	        System.out.println("Connection error: " + e.getMessage());
+	    }
+	}
+	public void withDraw(int acc_id, double amount) {
+	    String getBalanceQuery = "SELECT balance FROM accounts WHERE acc_id = ?";
+	    String checkAccountQuery = "SELECT COUNT(*) FROM accounts WHERE acc_id = ?";
+	    String withDrawQuery = "UPDATE accounts SET balance = balance - ? WHERE acc_id = ?";
+	    String transactionQuery = "INSERT INTO transactions (acc_id, type, amount, timestamp, note) VALUES (?, 'DEBIT', ?, NOW(), ?)";
+
+	    try (Connection conn = DBUtil.getConnection()) {
+	        conn.setAutoCommit(false); // 🧠 Begin transaction
+
+	        try (
+	            PreparedStatement checkAcc = conn.prepareStatement(checkAccountQuery);
+	            PreparedStatement getAccBalance = conn.prepareStatement(getBalanceQuery);
+	            PreparedStatement withDrawStmt = conn.prepareStatement(withDrawQuery);
+	            PreparedStatement txnStmt = conn.prepareStatement(transactionQuery)
+	        ) {
+	            // 🔍 Step 1: Check if account exists
+	            checkAcc.setInt(1, acc_id);
+	            ResultSet rsAcc = checkAcc.executeQuery();
+	            rsAcc.next();
+	            if (rsAcc.getInt(1) == 0) {
+	                System.out.println("❌ Withdrawal failed: Account does not exist.");
+	                conn.rollback(); // ⚠️ Rollback on invalid account
+	                return;
+	            }
+
+	            // 💰 Step 2: Check account balance
+	            getAccBalance.setInt(1, acc_id);
+	            ResultSet rsBalance = getAccBalance.executeQuery();
+	            rsBalance.next();
+	            double currentBalance = rsBalance.getDouble("balance");
+
+	            if (currentBalance < amount) {
+	                System.out.println("❌ Withdrawal failed: Insufficient balance.");
+	                conn.rollback(); // ⚠️ Rollback on insufficient funds
+	                return;
+	            }
+
+	            // 💸 Step 3: Update account balance
+	            withDrawStmt.setDouble(1, amount);
+	            withDrawStmt.setInt(2, acc_id);
+	            int rowsAffected = withDrawStmt.executeUpdate();
+
+	            if (rowsAffected == 0) {
+	                System.out.println("❌ Withdrawal failed: Account not found during update.");
+	                conn.rollback(); // ⚠️ Rollback on failed update
+	                return;
+	            }
+
+	            // 📝 Step 4: Insert transaction record
+	            String note = "Withdrawal ₹" + amount;
+	            txnStmt.setInt(1, acc_id);
+	            txnStmt.setDouble(2, amount);
+	            txnStmt.setString(3, note);
+	            txnStmt.executeUpdate();
+
+	            conn.commit(); // ✅ All steps succeeded
+	            System.out.println("✅ Withdrawal successful! ₹" + amount + " deducted from account.");
+	        } catch (SQLException e) {
+	            conn.rollback(); // 🔁 Rollback on any error during transaction
+	            System.out.println("❌ Withdrawal failed. Transaction rolled back.");
+	            e.printStackTrace();
+	        }
+	    } catch (SQLException e) {
+	        System.out.println("❌ Database connection error: " + e.getMessage());
+	    }
+	}
+
+	public void transactionHistory(int acc_id) {
+	    String checkAccountQuery = "SELECT COUNT(*) FROM accounts WHERE acc_id = ?";
+	    String historyQuery = "SELECT type, amount, timestamp, note FROM transactions WHERE acc_id = ? ORDER BY timestamp DESC";
+
+	    try (Connection conn = DBUtil.getConnection()) {
+	        // 🔍 Check if account exists
+	        try (PreparedStatement checkAcc = conn.prepareStatement(checkAccountQuery)) {
+	            checkAcc.setInt(1, acc_id);
+	            ResultSet rs = checkAcc.executeQuery();
+	            rs.next();
+	            if (rs.getInt(1) == 0) {
+	                System.out.println("❌ Account not found.");
+	                return;
+	            }
+	        }
+
+	        // 📜 Fetch and display transaction history
+	        try (PreparedStatement stmt = conn.prepareStatement(historyQuery)) {
+	            stmt.setInt(1, acc_id);
+	            ResultSet rs = stmt.executeQuery();
+
+	            System.out.println("\n📜 Transaction History for Account ID: " + acc_id);
+	            System.out.println("-----------------------------------------------------");
+	            boolean found = false;
+
+	            while (rs.next()) {
+	                found = true;
+	                String type = rs.getString("type");
+	                double amount = rs.getDouble("amount");
+	                Timestamp timestamp = rs.getTimestamp("timestamp");
+	                String note = rs.getString("note");
+
+	                System.out.printf("Type     : %s\nAmount   : ₹%.2f\nTime     : %s\nNote     : %s\n",
+	                        type, amount, timestamp.toString(), (note != null ? note : "N/A"));
+	                System.out.println("-----------------------------------------------------");
+	            }
+
+	            if (!found) {
+	                System.out.println("No transactions found for this account.");
+	            }
+	        }
+
+	    } catch (SQLException e) {
+	        System.out.println("❌ Error fetching transaction history: " + e.getMessage());
+	    }
+	}
+
+	
+   
+
+}

@@ -1,0 +1,64 @@
+package com.swabhav.jdbc;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class TransactionExample {
+    public static void main(String[] args) {
+        Connection con = null;
+        try {
+            // 1. Load JDBC Driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // 2. Establish connection
+            con = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/jdbc_demo", "root", "samadKasu12@#");
+            System.out.println("✅ Connection established successfully!!");
+
+            // 3. Disable auto-commit for manual transaction control
+            con.setAutoCommit(false);
+
+            // 4. Prepare withdrawal statement (from Amit, ID: 1)
+            PreparedStatement withdrawStmt = con.prepareStatement(
+                "UPDATE accounts SET balance = balance - ? WHERE account_id = ? AND balance >= ?"
+            );
+            withdrawStmt.setDouble(1, 5000);
+            withdrawStmt.setInt(2, 1); // Amit
+            withdrawStmt.setDouble(3, 5000); // Check sufficient balance
+
+            int withdrawRows = withdrawStmt.executeUpdate();
+
+            if (withdrawRows != 1) {
+                throw new RuntimeException("❌ Withdrawal failed: Insufficient balance or account not found (ID: 1)");
+            }
+
+            // 5. Prepare deposit statement (to Pramod, ID: 2)
+            PreparedStatement depositStmt = con.prepareStatement(
+                "UPDATE accounts SET balance = balance + ? WHERE account_id = ?"
+            );
+            depositStmt.setDouble(1, 5000);
+            depositStmt.setInt(2, 2); // Pramod
+
+            int depositRows = depositStmt.executeUpdate();
+
+            if (depositRows != 1) {
+                throw new RuntimeException("❌ Deposit failed: Account not found for Pramod (ID: 2)");
+            }
+
+            // 6. Commit the transaction
+            con.commit();
+            System.out.println("✅ Transaction successful! ₹5000 transferred from Amit (ID: 1) to Pramod (ID: 2).");
+
+        } catch (Exception e) {
+            System.out.println("⚠️ Error: " + e.getMessage());
+            try {
+                if (con != null) {
+                    con.rollback();
+                    System.out.println("↩️ Transaction rolled back.");
+                }
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+        }

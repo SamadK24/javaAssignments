@@ -1,0 +1,83 @@
+package com.swabhav.BankingApp.ui;
+
+import java.util.Scanner;
+
+import com.swabhav.BankingApp.model.Accounts;
+import com.swabhav.BankingApp.model.BankService;
+import com.swabhav.BankingApp.model.InvalidAmountException;
+
+public class CustomerUI {
+    private static Scanner sc = new Scanner(System.in);
+    private static final BankService bankService = new BankService();
+    private static Accounts loggedInAccount;
+
+    public static void showCustomerMenu() {
+        while (true) {
+            System.out.println("\n===== Customer Menu =====");
+            System.out.println("1. Check Balance");
+            System.out.println("2. Deposit");
+            System.out.println("3. Withdraw");
+            System.out.println("4. Transfer Money");
+            System.out.println("5. View Transaction History");
+            System.out.println("6. Logout");
+
+            int choice = InputUtil.readInt("Enter your choice: ");
+
+            switch (choice) {
+                case 1:
+                    bankService.checkBalance(loggedInAccount.getAcc_id());
+                    break;
+                case 2:
+                    try {
+                        double depositAmt = InputUtil.readValidAmount("Enter amount to deposit: ");
+                        bankService.deposit(loggedInAccount.getAcc_id(), depositAmt);
+                        System.out.println("✅ Amount deposited successfully.");
+                    } catch (InvalidAmountException e) {
+                        System.out.println("❌ " + e.getMessage());
+                    }
+                    break;
+                case 3:
+                    try {
+                        double withdrawAmt = InputUtil.readValidAmount("Enter amount to withdraw: ");
+                        bankService.withDraw(loggedInAccount.getAcc_id(), withdrawAmt);
+                        System.out.println("✅ Amount withdrawn successfully.");
+                    } catch (InvalidAmountException e) {
+                        System.out.println("❌ " + e.getMessage());
+                    }
+                    break;
+                case 4:
+                    int toAccId = InputUtil.readInt("Enter recipient account ID: ");
+                    try {
+                        double transferAmt = InputUtil.readValidAmount("Enter amount to transfer: ");
+                        bankService.transferMoney(loggedInAccount.getAcc_id(), toAccId, transferAmt);
+                        System.out.println("✅ Transfer completed successfully.");
+                    } catch (InvalidAmountException e) {
+                        System.out.println("❌ " + e.getMessage());
+                    }
+                    break;
+                case 5:
+                    bankService.transactionHistory(loggedInAccount.getAcc_id());
+                    break;
+                case 6:
+                    loggedInAccount = null;
+                    System.out.println("👋 Logged out.");
+                    return;
+                default:
+                    System.out.println("❌ Invalid choice. Try again.");
+            }
+        }
+    }
+
+    public static boolean loginAsCustomer() {
+        String username = InputUtil.readValidUsername("Enter Username: ");
+        String password = InputUtil.readValidPassword("Enter Password: ");
+
+        Accounts acc = bankService.getAccountByUsernameAndPassword(username, password);
+        if (acc != null) {
+            loggedInAccount = acc;
+            return true;
+        } else {
+            return false;
+        }
+    }
+}

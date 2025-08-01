@@ -1,0 +1,7 @@
+package com.swabhav.AbstractFactoryPattern.model;
+
+public class WaffleCone implements Cone {
+    public void make() {
+        System.out.println("Making Waffle Cone");
+    }
+}
