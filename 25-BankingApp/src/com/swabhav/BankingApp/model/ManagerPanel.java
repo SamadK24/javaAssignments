@@ -55,19 +55,34 @@ public class ManagerPanel {
             input.nextLine();
 
             switch (option) {
-                case 1 -> displayAllAccounts();
-                case 2 -> removeAccount();
-                case 3 -> displayAccountTransactions();
-                case 4 -> createNewAccount();
-                case 5 -> updateAccountName();
-                case 6 -> toggleAccountStatus();
-                case 7 -> updateAdminPassword();
-                case 8 -> {
-                    System.out.println("Logging out...");
-                    return;
-                }
-                default -> System.out.println("Invalid choice. Try again.");
-            }
+            case 1:
+                displayAllAccounts();
+                break;
+            case 2:
+                removeAccount();
+                break;
+            case 3:
+                displayAccountTransactions();
+                break;
+            case 4:
+                createNewAccount();
+                break;
+            case 5:
+                updateAccountName();
+                break;
+            case 6:
+                toggleAccountStatus();
+                break;
+            case 7:
+                updateAdminPassword();
+                break;
+            case 8:
+                System.out.println("Logging out...");
+                return;
+            default:
+                System.out.println("Invalid choice. Try again.");
+        }
+
         }
     }
 

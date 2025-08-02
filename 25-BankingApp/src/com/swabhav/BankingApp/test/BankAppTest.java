@@ -7,9 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-import com.swabhav.BankingApp.model.Admin;
-import com.swabhav.BankingApp.model.Customer;
-
+import com.swabhav.BankingApp.model.ManagerPanel;
+import com.swabhav.BankingApp.model.UserPortal;
 
 public class BankAppTest {
     private static final Scanner sc = new Scanner(System.in);
@@ -17,7 +16,6 @@ public class BankAppTest {
     private static final String DB_USER = "root";
     private static final String DB_PASS = "samadkasu12@#";
 
-   
     private static final String GREEN = "\u001B[32m";
     private static final String RED = "\u001B[31m";
     private static final String RESET = "\u001B[0m";
@@ -32,34 +30,38 @@ public class BankAppTest {
 
         while (true) {
             System.out.println("\n========== MAIN MENU ==========");
-            System.out.println("1. Admin");
-            System.out.println("2. Customer Login");
+            System.out.println("1. Manager Panel");
+            System.out.println("2. User Login");
             System.out.println("3. Exit");
             System.out.print("Choose an option: ");
 
             int choice = getValidatedIntInput();
 
             switch (choice) {
-                case 1 -> adminLogin();
-                case 2 -> customerLogin();
-                case 3 -> {
+                case 1:
+                    managerLogin();
+                    break;
+                case 2:
+                    userLogin();
+                    break;
+                case 3:
                     System.out.println("Thank you for using the Banking System. Goodbye!");
                     return;
-                }
-                default -> System.out.println("Invalid option. Please choose 1, 2, or 3.");
+                default:
+                    System.out.println("Invalid option. Please choose 1, 2, or 3.");
             }
         }
     }
 
-    private static void adminLogin() {
+    private static void managerLogin() {
         int attempts = 0;
         while (attempts < 3) {
-            System.out.print("Enter Admin Password: ");
+            System.out.print("Enter Manager Password: ");
             String inputPassword = sc.nextLine();
 
-            if (isValidAdmin(inputPassword)) {
-                System.out.println(GREEN + "✅ Admin login successful." + RESET);
-                Admin.showMenu();
+            if (isValidManager(inputPassword)) {
+                System.out.println(GREEN + "✅ Manager login successful." + RESET);
+                ManagerPanel.displayManagerMenu();
                 return;
             } else {
                 System.out.println(RED + "Incorrect password." + RESET);
@@ -69,13 +71,13 @@ public class BankAppTest {
 
         System.out.print("Too many failed attempts. Do you want to continue? (Y/N): ");
         if (sc.nextLine().equalsIgnoreCase("Y")) {
-            adminLogin();
+            managerLogin();
         } else {
             System.out.println("Returning to main menu.");
         }
     }
 
-    private static boolean isValidAdmin(String password) {
+    private static boolean isValidManager(String password) {
         String sql = "SELECT * FROM admin WHERE password = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -85,12 +87,12 @@ public class BankAppTest {
             return rs.next();
 
         } catch (SQLException e) {
-            System.out.println(RED + "Database error (admin check): " + e.getMessage() + RESET);
+            System.out.println(RED + "Database error (manager check): " + e.getMessage() + RESET);
         }
         return false;
     }
 
-    private static void customerLogin() {
+    private static void userLogin() {
         int attempts = 0;
         while (attempts < 3) {
             System.out.print("Enter Account ID: ");
@@ -99,9 +101,9 @@ public class BankAppTest {
             System.out.print("Enter 4-digit PIN: ");
             int pin = getValidatedIntInput();
 
-            if (isValidCustomer(id, pin)) {
-                System.out.println(GREEN + "✅ Customer login successful." + RESET);
-                Customer.showMenu(id);
+            if (isValidUser(id, pin)) {
+                System.out.println(GREEN + "✅ User login successful." + RESET);
+                UserPortal.launchUserMenu(id);
                 return;
             } else {
                 System.out.println(RED + "Invalid credentials." + RESET);
@@ -111,13 +113,13 @@ public class BankAppTest {
 
         System.out.print("Too many failed attempts. Do you want to continue? (Y/N): ");
         if (sc.nextLine().equalsIgnoreCase("Y")) {
-            customerLogin();
+            userLogin();
         } else {
             System.out.println("Returning to main menu.");
         }
     }
 
-    private static boolean isValidCustomer(int id, int pin) {
+    private static boolean isValidUser(int id, int pin) {
         String sql = "SELECT * FROM accounts WHERE id = ? AND pin = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -128,7 +130,7 @@ public class BankAppTest {
             return rs.next();
 
         } catch (SQLException e) {
-            System.out.println(RED + "Database error (customer check): " + e.getMessage() + RESET);
+            System.out.println(RED + "Database error (user check): " + e.getMessage() + RESET);
         }
         return false;
     }
@@ -147,3 +149,4 @@ public class BankAppTest {
         return DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
     }
 }
+

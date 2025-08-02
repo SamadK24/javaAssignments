@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-    <fullyQualifiedTypeName name="com.swabhav.GuitarWithEnum.model.Wood"/>
-    <fullyQualifiedTypeName name="java.util.Iterator"/>
-    <fullyQualifiedTypeName name="com.swabhav.GuitarWithSpec.model.Inventory"/>
-    <fullyQualifiedTypeName name="com.swabhav.GuitarWithSpec.model.Type"/>
-    <fullyQualifiedTypeName name="com.swabhav.GuitarWithSpec.model.Wood"/>
-    <fullyQualifiedTypeName name="com.swabhav.GuitarWithSpec.model.Guitarspec"/>
-    <fullyQualifiedTypeName name="com.swabhav.GuitarWithSpec.model.Guitar"/>
-    <fullyQualifiedTypeName name="java.util.ArrayList"/>
-    <fullyQualifiedTypeName name="com.swabhav.GuitarFinal.model.Final_Guitar"/>
-    <fullyQualifiedTypeName name="com.swabhav.GuitarFinal.model.GuitarSpec"/>
-    <fullyQualifiedTypeName name="java.util.List"/>
     <fullyQualifiedTypeName name="com.swabhav.GuitarWithSpec.model.Builder"/>
     <fullyQualifiedTypeName name="com.swabhav.GuitarFinal.model.Builder"/>
     <fullyQualifiedTypeName name="com.swabhav.GuitarFinal.model.Type"/>
@@ -36,8 +25,6 @@
     <fullyQualifiedTypeName name="org.junit.jupiter.params.provider.ValueSource"/>
     <fullyQualifiedTypeName name="java.sql.DriverManager"/>
     <fullyQualifiedTypeName name="com.swabhav.BankingApp.model.DBUtil"/>
-    <fullyQualifiedTypeName name="java.sql.Connection"/>
-    <fullyQualifiedTypeName name="java.sql.PreparedStatement"/>
     <fullyQualifiedTypeName name="java.sql.SQLException"/>
     <fullyQualifiedTypeName name="java.sql.ResultSet"/>
     <fullyQualifiedTypeName name="java.util.Scanner"/>
@@ -45,19 +32,32 @@
     <fullyQualifiedTypeName name="com.swabhav.BankingApp.model.Accounts"/>
     <fullyQualifiedTypeName name="java.sql.Timestamp"/>
     <fullyQualifiedTypeName name="java.sql.Statement"/>
-    <fullyQualifiedTypeName name="com.swabhav.BankingApp.model.Validator"/>
     <fullyQualifiedTypeName name="com.swabhav.BankingApp.model.AccountNotFoundException"/>
     <fullyQualifiedTypeName name="com.swabhav.BankingApp.model.InsufficientBalanceException"/>
     <fullyQualifiedTypeName name="com.swabhav.BankingApp.model.InvalidInputException"/>
     <fullyQualifiedTypeName name="java.time.LocalDateTime"/>
     <fullyQualifiedTypeName name="java.time.format.DateTimeFormatter"/>
-    <fullyQualifiedTypeName name="java.text.SimpleDateFormat"/>
     <fullyQualifiedTypeName name="jakarta.servlet.Servlet"/>
     <fullyQualifiedTypeName name="jakarta.servlet.GenericServlet"/>
     <fullyQualifiedTypeName name="org.apache.catalina.connector.Response"/>
     <fullyQualifiedTypeName name="jakarta.servlet.http.HttpServlet"/>
     <fullyQualifiedTypeName name="jakarta.servlet.annotation.WebServlet"/>
-    <fullyQualifiedTypeName name="javax.servlet.http.HttpServlet"/>
-    <fullyQualifiedTypeName name="javax.servlet.annotation.WebServlet"/>
+    <fullyQualifiedTypeName name="java.io.IOException"/>
     <fullyQualifiedTypeName name="java.io.PrintWriter"/>
+    <fullyQualifiedTypeName name="java.text.SimpleDateFormat"/>
+    <fullyQualifiedTypeName name="java.text.ParseException"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="javax.servlet.http.HttpServletRequest"/>
+    <fullyQualifiedTypeName name="javax.servlet.http.HttpServletResponse"/>
+    <fullyQualifiedTypeName name="javax.servlet.ServletException"/>
+    <fullyQualifiedTypeName name="javax.servlet.http.HttpServlet"/>
+    <fullyQualifiedTypeName name="javax.servlet.Servlet"/>
+    <fullyQualifiedTypeName name="javax.servlet.ServletContext"/>
+    <fullyQualifiedTypeName name="javax.servlet.annotation.WebServlet"/>
+    <fullyQualifiedTypeName name="com.swabhav.BankingApp.ui.CustomerUI"/>
+    <fullyQualifiedTypeName name="com.swabhav.BankingApp.model.Validator"/>
+    <fullyQualifiedTypeName name="java.sql.Connection"/>
+    <fullyQualifiedTypeName name="java.sql.PreparedStatement"/>
+    <fullyQualifiedTypeName name="javax.servlet.RequestDispatcher"/>
 </qualifiedTypeNameHistroy>
